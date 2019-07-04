@@ -9,26 +9,17 @@
 import SwiftUI
 
 struct Home : View {
-    
-    var menu = menuData
+    @State var show = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        ZStack {
             
-            ForEach(menu) { item in
-                MenuRow(image: item.icon, text: item.title)
+            Button(action: { self.show.toggle() }) {
+                Text("Open Menu")
             }
             
-            Spacer()
+            MenuView(show: $show)
         }
-        .padding(.top, 20)
-        .padding(30)
-        .frame(minWidth: 0, maxWidth: .infinity)
-        .background(Color.white)
-        .cornerRadius(30)
-        .padding(.trailing, 60)
-        .shadow(radius: 20)
-        
     }
 }
 
@@ -47,9 +38,9 @@ struct MenuRow : View {
         return HStack {
             Image(systemName: image)
                 .imageScale(.large)
-                .foregroundColor(Color(text))
+                .foregroundColor(Color("icons"))
                 .frame(width: 32, height: 32)
-            Text("My Account")
+            Text(text)
                 .font(.headline)
             Spacer()
         }
@@ -68,3 +59,32 @@ let menuData = [
     Menu(title: "Team", icon: "person.and.person"),
     Menu(title: "Sign out", icon: "arrow.uturn.down")
 ]
+
+struct MenuView : View {
+    var menu = menuData
+    @Binding var show: Bool
+    
+    var body: some View {
+        return VStack(alignment: .leading, spacing: 20) {
+            
+            ForEach(menu) { item in
+                MenuRow(image: item.icon, text: item.title)
+            }
+            
+            Spacer()
+        }
+        .padding(.top, 20)
+            .padding(30)
+            .frame(minWidth: 0, maxWidth: .infinity)
+            .background(Color.white)
+            .cornerRadius(30)
+            .padding(.trailing, 60)
+            .shadow(radius: 20)
+            .rotation3DEffect(Angle(degrees: show ? 0 : 90), axis: (x: 0, y: 10.0, z: 0))
+            .animation(.basic())
+            .offset(x: show ? 0 : -UIScreen.main.bounds.width)
+            .tapAction {
+                self.show.toggle()
+            }
+    }
+}
